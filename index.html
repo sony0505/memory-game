@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>現代生活小學堂 - 配對遊戲 (獨立圖片版)</title>
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", sans-serif;
+            background-color: #FFF3E0;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #D32F2F;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 1.5rem;
+            color: #333;
+            font-weight: bold;
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .card {
+            background-color: #4CAF50;
+            border-radius: 15px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.3s, background-color 0.3s;
+            user-select: none;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        /* 翻開後的樣子 */
+        .card.flipped {
+            background-color: #FFFFFF;
+            color: #333;
+            border: 4px solid #4CAF50;
+        }
+        /* 文字卡片在翻開時顯示文字 */
+        .card.flipped.text-card {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+        /* 配對成功後的樣子 */
+        .card.matched {
+            background-color: #FFEB3B;
+            color: #E65100;
+            border: 4px solid #FF9800;
+            cursor: default;
+        }
+        #message-box {
+            font-size: 2rem;
+            color: #1565C0;
+            margin-top: 20px;
+            min-height: 50px;
+            font-weight: bold;
+        }
+        button {
+            margin-top: 20px;
+            padding: 15px 40px;
+            font-size: 1.8rem;
+            background-color: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        button:hover {
+            background-color: #F57C00;
+        }
+        @media (max-width: 600px) {
+            .game-board {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .card {
+                height: 100px;
+                font-size: 2.5rem;
+            }
+            .card.flipped.text-card {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🧠 現代生活小學堂</h1>
+    <p>阿公阿嬤，請點擊卡片，把圖案和文字找出來配對喔！</p>
+    
+    <div id="message-box">歡迎來挑戰！</div>
+    
+    <div class="game-board" id="game-board">
+        </div>
+
+    <button onclick="initGame()">重新開始</button>
+
+    <script>
+        // 題目設計：對應你下載的 4 張獨立圖片
+        const cardData = [
+            // 配對組 1: Wi-Fi
+            { id: 1, type: "icon", matchId: 1, voice: "這是 Wi-Fi 無線網路，可以讓手機免費上網喔！", imgSrc: "wifi.png" },
+            { id: 2, type: "text", content: "無線網路", matchId: 1, voice: "這是 Wi-Fi 無線網路，可以讓手機免費上網喔！" },
+            
+            // 配對組 2: QR Code
+            { id: 3, type: "icon", matchId: 2, voice: "這是 QR Code 行動條碼，用相機掃一下就可以看到資訊喔！", imgSrc: "qrcode.png" },
+            { id: 4, type: "text", content: "掃描條碼", matchId: 2, voice: "這是 QR Code 行動條碼，用相機掃一下就可以看到資訊喔！" },
+            
+            // 配對組 3: 行動支付
+            { id: 5, type: "icon", matchId: 3, voice: "這是行動支付，出門不用帶錢包，手機嗶一下就能買菜！", imgSrc: "pay.png" },
+            { id: 6, type: "text", content: "行動支付", matchId: 3, voice: "這是行動支付，出門不用帶錢包，手機嗶一下就能買菜！" },
+            
+            // 配對組 4: 視訊通話
+            { id: 7, type: "icon", matchId: 4, voice: "這是視訊通話，可以從螢幕上看到遠方的孫子喔！", imgSrc: "video.png" },
+            { id: 8, type: "text", content: "視訊通話", matchId: 4, voice: "這是視訊通話，可以從螢幕上看到遠方的孫子喔！" }
+        ];
+
+        let flippedCards = [];
+        let matchedCount = 0;
+        let isProcessing = false;
+
+        function speak(text) {
+            window.speechSynthesis.cancel();
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'zh-TW';
+            utterance.rate = 0.85; 
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function createBoard() {
+            const board = document.getElementById('game-board');
+            board.innerHTML = '';
+            const shuffledData = shuffle([...cardData]);
+
+            shuffledData.forEach(data => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.id = data.id;
+                card.dataset.matchId = data.matchId;
+                card.dataset.voice = data.voice;
+                
+                // 初始狀態顯示問號
+                card.innerText = '❓';
+
+                if (data.type === "icon") {
+                    card.classList.add('icon-card');
+                    card.dataset.imgSrc = data.imgSrc; // 記住圖片的路徑
+                } else {
+                    card.classList.add('text-card');
+                    card.dataset.content = data.content;
+                }
+
+                card.addEventListener('click', flipCard);
+                board.appendChild(card);
+            });
+        }
+
+        function flipCard() {
+            if (isProcessing) return;
+            if (this.classList.contains('flipped') || this.classList.contains('matched')) return;
+
+            // 翻開卡片
+            this.classList.add('flipped');
+            
+            if (this.classList.contains('icon-card')) {
+                // 顯示圖片
+                this.innerText = ''; 
+                this.style.backgroundImage = `url('${this.dataset.imgSrc}')`;
+            } else {
+                // 顯示文字
+                this.innerText = this.dataset.content;
+            }
+
+            flippedCards.push(this);
+
+            if (flippedCards.length === 2) {
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            isProcessing = true;
+            const [card1, card2] = flippedCards;
+            const msgBox = document.getElementById('message-box');
+
+            if (card1.dataset.matchId === card2.dataset.matchId) {
+                // 配對成功
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                
+                const successText = card1.dataset.voice;
+                msgBox.innerText = "答對了！" + successText;
+                speak("答對了！" + successText);
+                
+                matchedCount += 2;
+                flippedCards = [];
+                isProcessing = false;
+
+                if (matchedCount === cardData.length) {
+                    setTimeout(() => {
+                        msgBox.innerText = "🎉 太棒了！全部過關！阿公阿嬤好厲害！";
+                        speak("太棒了！全部過關！阿公阿嬤好厲害！");
+                    }, 1000);
+                }
+            } else {
+                // 配對失敗，蓋回去
+                msgBox.innerText = "哎呀，不一樣喔，再試試看！";
+                setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card1.innerText = '❓';
+                    card1.style.backgroundImage = 'none';
+
+                    card2.classList.remove('flipped');
+                    card2.innerText = '❓';
+                    card2.style.backgroundImage = 'none';
+
+                    msgBox.innerText = "繼續加油！";
+                    flippedCards = [];
+                    isProcessing = false;
+                }, 1500);
+            }
+        }
+
+        function initGame() {
+            matchedCount = 0;
+            flippedCards = [];
+            isProcessing = false;
+            document.getElementById('message-box').innerText = "歡迎來挑戰！點擊卡片開始吧！";
+            window.speechSynthesis.cancel();
+            createBoard();
+        }
+
+        // 遊戲啟動
+        window.onload = initGame;
+    </script>
+</body>
+</html>
