@@ -2,7 +2,7 @@
 
 🔗 線上體驗：[https://sony0505.github.io/memory-game/](https://sony0505.github.io/memory-game/)
 
-![QR Code](qrcode.png)
+![QR Code](./qrcode.png)
 
 ### 功能特色
 - ✅ 超大字體與高對比設計
