@@ -1,6 +1,7 @@
 ## 數位任意門：憶起打造腦力防護罩！
 
-🔗 線上體驗：[XXX（GitHub Pages）](https://sony0505.github.io/memory-game/)
+🔗 線上體驗：[https://sony0505.github.io/memory-game/](https://sony0505.github.io/memory-game/)
+
 🌐 無需下載，掃描即可開始體驗（適合長者使用）
 ![QR Code](qrcode.png)
 
