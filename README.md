@@ -2,7 +2,6 @@
 
 🔗 線上體驗：[https://sony0505.github.io/memory-game/](https://sony0505.github.io/memory-game/)
 
-🌐 無需下載，掃描即可開始體驗（適合長者使用）
 ![QR Code](qrcode.png)
 
 ### 功能特色
