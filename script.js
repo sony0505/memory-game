@@ -6,6 +6,50 @@ const gameSettings = [
     { text: "視訊通話", image: "images/video.png", description: "這是視訊通話，可以從螢幕上看到遠方的孫子喔！" },
 ];
 
+// --- 音效設定區 ---
+// 你可以在陣列中加入更多音效檔名，程式會自動隨機挑選播放
+const audioAssets = {
+    // 翻牌音效：對應 sounds/flip/ 資料夾下的檔案
+    flip: [
+        'sounds/flip/flip.mp3', 
+        'sounds/flip/flip1.mp3', 
+        'sounds/flip/flip2.mp3'
+    ],
+    // 正確音效：對應 sounds/correct/ 資料夾下的檔案
+    correct: [
+        'sounds/correct/correct.mp3', 
+        'sounds/correct/correct1.mp3', 
+        'sounds/correct/correct2.mp3'
+    ],
+    // 錯誤音效：對應 sounds/wrong/ 資料夾下的檔案
+    wrong: [
+        'sounds/wrong/wrong.mp3', 
+        'sounds/wrong/wrong1.mp3'
+    ]
+};
+
+/**
+ * 播放音效輔助函式
+ * @param {string} type - 音效類型 ('flip', 'correct', 'wrong')
+ */
+function playEffect(type) {
+    const sounds = audioAssets[type];
+    if (!sounds || sounds.length === 0) return;
+    
+    // 隨機挑選一個音效檔案
+    const randomFile = sounds[Math.floor(Math.random() * sounds.length)];
+    const audio = new Audio(randomFile);
+
+    // 針對特定的檔案進行音量微調
+    if (randomFile === 'sounds/wrong/wrong.mp3') {
+        audio.volume = 0.2; // 只有這個檔案特別大聲，將其調小
+    } else {
+        audio.volume = 1.0; // 其他所有檔案（包含 wrong1.mp3）維持正常音量
+    }
+
+    audio.play().catch(err => console.warn("音效播放失敗，請檢查檔案路徑:", err));
+}
+
 let cardData = [];
 let flippedCards = [];
 let matchedCount = 0;
@@ -14,6 +58,50 @@ let timerInterval = null;
 let secondsElapsed = 0;
 let gameMode = "up"; // 'up' 代表正計時，'down' 代表倒計時
 let initialCountdown = 40; // 紀錄開始時的秒數
+let isBGMEnabled = true; // 背景音樂開關狀態
+
+// 背景音樂設定
+const bgm = new Audio('sounds/BGM.mp3');
+bgm.loop = true;
+bgm.volume = 0.2; // 設定較低的背景音量
+bgm.autoplay = true; // 提示瀏覽器嘗試自動播放
+
+/**
+ * 切換背景音樂開關
+ */
+function toggleBGM() {
+    const bgmToggle = document.getElementById('bgm-toggle');
+    isBGMEnabled = bgmToggle ? bgmToggle.checked : true;
+    
+    if (isBGMEnabled) {
+        playBGM();
+    } else {
+        bgm.pause();
+    }
+}
+
+/**
+ * 播放背景音樂，處理瀏覽器自動播放限制
+ */
+function playBGM() {
+    if (!isBGMEnabled) return; // 如果音樂被關閉，則不播放
+
+    const playPromise = bgm.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(() => {
+            // 擴大監聽範圍：只要使用者在網頁上有任何動作（點擊、觸碰、按鍵、滑鼠點下），就立刻播放
+            const startBGM = () => {
+                bgm.play().catch(e => console.log("BGM 播放仍被阻擋:", e));
+                ['click', 'touchstart', 'keydown', 'mousedown'].forEach(type => 
+                    document.removeEventListener(type, startBGM)
+                );
+            };
+            ['click', 'touchstart', 'keydown', 'mousedown'].forEach(type => 
+                document.addEventListener(type, startBGM)
+            );
+        });
+    }
+}
 
 function toggleCountdownInput() {
     const modeSelect = document.getElementById('mode-select');
@@ -100,7 +188,7 @@ function speak(text) {
     window.speechSynthesis.cancel();
     let utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'zh-TW';
-    utterance.rate = 0.85; 
+    utterance.rate = 1.05; 
     window.speechSynthesis.speak(utterance);
 }
 
@@ -154,6 +242,8 @@ function flipCard() {
     if (isProcessing) return;
     if (this.classList.contains('flipped') || this.classList.contains('matched')) return;
 
+    playEffect('flip'); // 播放翻牌音效
+
     this.classList.add('flipped');
     
     if (this.classList.contains('icon-card')) {
@@ -176,6 +266,7 @@ function checkMatch() {
     const msgBox = document.getElementById('message-box');
 
     if (card1.dataset.matchId === card2.dataset.matchId) {
+        playEffect('correct'); // 播放正確音效
         card1.classList.add('matched');
         card2.classList.add('matched');
         
@@ -198,6 +289,11 @@ function checkMatch() {
         }
     } else {
         msgBox.innerText = "哎呀，不一樣喔，再試試看！";
+        playEffect('wrong'); // 播放錯誤音效
+        const failText = "哎呀，不一樣喔，再試試看！";
+        msgBox.innerText = failText;
+        speak(failText); // 與音效同步播放語音
+
         setTimeout(() => {
             card1.classList.remove('flipped');
             card1.innerText = '❓';
@@ -218,6 +314,7 @@ function initGame() {
     isProcessing = false;
     document.getElementById('message-box').innerText = "歡迎來挑戰！點擊卡片開始吧！";
     window.speechSynthesis.cancel();
+    playBGM(); // 啟動背景音樂
     startTimer(); // 開始新的計時
     createBoard();
 }
