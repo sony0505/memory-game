@@ -8,13 +8,11 @@ const gameSettings = [
     { text: "電子郵件", image: "images/email.png", description: "用手機收發信，不用紙筆也能聯絡" },
     { text: "Line", image: "images/line.png", description: "用手機傳訊息，遠距離跟家人聊天" },
     { text: "按讚", image: "images/like.png", description: "看到喜歡的內容，按一下表示支持" },
-    { text: "訂閱頻道", image: "images/subscribe.png", description: "按下訂閱，就能追蹤喜歡的 YouTube 節目" },
     { text: "YouTube", image: "images/youtube.png", description: "用手機或電視看電影，不用買 DVD" },
     { text: "Spotify", image: "images/spotify.png", description: "手機就能聽歌，不用下載也不用 CD" },
     { text: "Google Map", image: "images/map.png", description: "手機會帶你走路或開車，不怕迷路" },
     { text: "Uber", image: "images/uber.png", description: "用手機叫計程車，不用在路邊等" },
     { text: "Foodpanda", image: "images/foodpanda.png", description: "用手機點餐，食物會送到家" },
-    { text: "網路銀行", image: "images/bank.png", description: "手機就能轉帳，不用跑銀行" },
     { text: "藍牙連線", image: "images/bluetooth.png", description: "手機可以連耳機、喇叭，不用插線" },
     { text: "臉部解鎖", image: "images/faceid.png", description: "手機看你的臉就能解鎖" },
     { text: "指紋解鎖", image: "images/fingerprint.png", description: "用手指按一下就能開手機" },
@@ -22,7 +20,6 @@ const gameSettings = [
     { text: "飛航模式", image: "images/airplane.png", description: "手機暫時關網路，搭飛機時會用到" },
     { text: "行動熱點", image: "images/hotspot.png", description: "把你的手機網路分享給別人用" },
     { text: "Podcast", image: "images/podcast.png", description: "用手機聽節目、故事或新聞" },
-    { text: "電子書", image: "images/ebook.png", description: "像 Kindle 一樣用電子方式看書" },
 ];
 
 // --- 音效設定區 ---
