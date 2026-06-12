@@ -56,14 +56,28 @@ function playEffect(type) {
     const randomFile = sounds[Math.floor(Math.random() * sounds.length)];
     const audio = new Audio(randomFile);
 
-    // 針對特定的檔案進行音量微調
+    // 針對特定的檔案進行音量微調，並套用全域音量
     if (randomFile === 'sounds/wrong/wrong.mp3') {
-        audio.volume = 0.2; // 只有這個檔案特別大聲，將其調小
+        audio.volume = Math.min(1.0, audioVolume * 0.4);
     } else {
-        audio.volume = 1.0; // 其他所有檔案（包含 wrong1.mp3）維持正常音量
+        audio.volume = audioVolume;
     }
 
     audio.play().catch(err => console.warn("音效播放失敗，請檢查檔案路徑:", err));
+}
+
+function adjustAudioVolume(value) {
+    const volumeRatio = Math.max(0, Math.min(100, Number(value))) / 100;
+    audioVolume = volumeRatio;
+
+    const valueLabel = document.getElementById('volume-value');
+    if (valueLabel) {
+        valueLabel.innerText = `${Math.round(volumeRatio * 100)}%`;
+    }
+
+    if (isBGMEnabled) {
+        bgm.volume = audioVolume * 0.3;
+    }
 }
 
 let cardData = [];
@@ -75,11 +89,12 @@ let secondsElapsed = 0;
 let gameMode = "up"; // 'up' 代表正計時，'down' 代表倒計時
 let initialCountdown = 40; // 紀錄開始時的秒數
 let isBGMEnabled = true; // 背景音樂開關狀態
+let audioVolume = 1.0; // 全域音量比例，0.0 到 1.0
 
 // 背景音樂設定
 const bgm = new Audio('sounds/BGM.mp3');
 bgm.loop = true;
-bgm.volume = 0.2; // 設定較低的背景音量
+bgm.volume = audioVolume * 0.5; // 初始背景音量為 50%
 bgm.autoplay = true; // 提示瀏覽器嘗試自動播放
 
 /**

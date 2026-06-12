@@ -58,8 +58,16 @@
                             <label class="form-check-label text-light" for="bgm-toggle">背景音樂 (BGM)</label>
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <label for="volume-slider" class="form-label text-light">音量調整</label>
+                        <input type="range" class="form-range" id="volume-slider" min="0" max="100" value="100" oninput="adjustAudioVolume(this.value)">
+                        <div class="d-flex justify-content-between text-secondary small">
+                            <span>靜音</span>
+                            <span id="volume-value">100%</span>
+                        </div>
+                    </div>
                     <div class="mt-2">
-                        <small class="text-secondary">之後可以在這裡加入音量調整功能...</small>
+                        <small class="text-secondary">可同時調整背景音樂與音效聲量。</small>
                     </div>
                 </div>
             </div>
