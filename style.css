@@ -1,55 +1,14 @@
 body {
     font-family: "Microsoft JhengHei", sans-serif;
-    background-color: #FFF3E0;
-    text-align: center;
-    margin: 0;
-    padding: 20px;
 }
-h1 {
-    color: #D32F2F;
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-}
-p {
-    font-size: 1.5rem;
-    color: #333;
-    font-weight: bold;
-}
-.settings-container {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: #fff;
-    padding: 10px 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    border: 2px solid #FF9800;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.settings-container select {
-    padding: 5px;
-    font-size: 1rem;
-}
-#timer-display {
-    font-size: 1.8rem;
-    color: #E65100;
-    background-color: #FFF9C4;
-    display: inline-block;
-    padding: 5px 20px;
-    border-radius: 20px;
-    margin-bottom: 10px;
-    font-weight: bold;
-    border: 2px solid #FFB300;
-}
+
 .game-board {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 15px;
     max-width: 800px;
-    margin: 20px auto;
 }
+
 .card {
     background-color: #4CAF50;
     border-radius: 15px;
@@ -87,42 +46,14 @@ p {
     border: 4px solid #FF9800;
     cursor: default;
 }
-#message-box {
-    font-size: 2rem;
-    color: #1565C0;
-    margin-top: 20px;
-    min-height: 50px;
-    font-weight: bold;
-}
-button {
-    margin-top: 20px;
-    padding: 15px 40px;
-    font-size: 1.8rem;
-    background-color: #FF9800;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-}
-button:hover {
-    background-color: #F57C00;
-}
+
 @media (max-width: 600px) {
-    .settings-container {
-        position: static;
-        display: inline-flex;
-        margin-bottom: 10px;
-    }
     .game-board {
         grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
     .card {
         height: 100px;
         font-size: 2.5rem;
-    }
-    .card.flipped.text-card {
-        font-size: 1.4rem;
     }
 }

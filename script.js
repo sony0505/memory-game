@@ -13,7 +13,16 @@ let isProcessing = false;
 let timerInterval = null;
 let secondsElapsed = 0;
 let gameMode = "up"; // 'up' 代表正計時，'down' 代表倒計時
-const COUNTDOWN_TIME = 40; // 倒計時秒數設定
+let initialCountdown = 40; // 紀錄開始時的秒數
+
+function toggleCountdownInput() {
+    const modeSelect = document.getElementById('mode-select');
+    const settingWrap = document.getElementById('countdown-setting-wrap');
+    if (modeSelect && settingWrap) {
+        // 如果是倒計時模式就顯示輸入框，否則隱藏
+        settingWrap.style.display = modeSelect.value === 'down' ? 'block' : 'none';
+    }
+}
 
 function startTimer() {
     // 先清除舊的計時器（如果有的話）
@@ -23,9 +32,13 @@ function startTimer() {
     const modeSelect = document.getElementById('mode-select');
     gameMode = modeSelect ? modeSelect.value : "up";
 
+    // 從輸入框獲取倒計時秒數
+    const countdownInput = document.getElementById('countdown-input');
+    initialCountdown = countdownInput ? parseInt(countdownInput.value) || 40 : 40;
+
     // 根據模式設定初始時間
     if (gameMode === "down") {
-        secondsElapsed = COUNTDOWN_TIME;
+        secondsElapsed = initialCountdown;
     } else {
         secondsElapsed = 0;
     }
@@ -161,7 +174,7 @@ function checkMatch() {
         if (matchedCount === cardData.length) {
             handleGameOver(true);
             setTimeout(() => {
-                const totalUsed = gameMode === "down" ? COUNTDOWN_TIME - secondsElapsed : secondsElapsed;
+                const totalUsed = gameMode === "down" ? initialCountdown - secondsElapsed : secondsElapsed;
                 const finishMsg = `🎉 太棒了！全部過關！一共花了 ${totalUsed} 秒！阿公阿嬤好厲害！`;
                 msgBox.innerText = finishMsg;
                 speak(finishMsg);
