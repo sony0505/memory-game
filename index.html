@@ -28,7 +28,14 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body">
-                    <h6 class="text-secondary mb-3">計時器設定</h6>
+                    <h6 class="text-secondary mb-3">遊戲設定</h6>
+                    <div class="mb-3">
+                        <label for="question-count" class="form-label text-light">題目數量</label>
+                        <select class="form-select bg-dark text-light border-secondary" id="question-count" onchange="initGame()">
+                            <option value="2">2 題 (2x2 共 4 格)</option>
+                            <option value="4" selected>4 題 (2x4 共 8 格)</option>
+                        </select>
+                    </div>
                     <div class="mb-3">
                         <label for="mode-select" class="form-label text-light">選擇模式</label>
                         <select class="form-select bg-dark text-light border-secondary" id="mode-select" onchange="toggleCountdownInput(); initGame();">

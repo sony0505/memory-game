@@ -84,7 +84,13 @@ function handleGameOver(isWin) {
 
 function prepareCards() {
     cardData = [];
-    gameSettings.forEach((item, index) => {
+    const countSelect = document.getElementById('question-count');
+    const pairCount = countSelect ? parseInt(countSelect.value) : 4;
+
+    // 從題庫中隨機挑選指定數量的題目，增加遊戲耐玩度
+    const selectedSettings = shuffle([...gameSettings]).slice(0, pairCount);
+
+    selectedSettings.forEach((item, index) => {
         cardData.push({ id: index + 'a', type: "icon", matchId: index, voice: item.description, imgSrc: item.image });
         cardData.push({ id: index + 'b', type: "text", matchId: index, voice: item.description, content: item.text });
     });
@@ -112,6 +118,16 @@ function createBoard() {
     
     prepareCards();
     const shuffledData = shuffle([...cardData]);
+
+    // 根據題目數量動態調整網格排版，確保畫面美觀
+    const pairCount = cardData.length / 2;
+    if (pairCount <= 2) {
+        board.style.gridTemplateColumns = "repeat(2, 1fr)";
+        board.style.maxWidth = "400px";
+    } else {
+        board.style.gridTemplateColumns = "repeat(4, 1fr)";
+        board.style.maxWidth = "800px";
+    }
 
     shuffledData.forEach(data => {
         const card = document.createElement('div');
