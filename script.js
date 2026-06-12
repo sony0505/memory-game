@@ -10,6 +10,64 @@ let cardData = [];
 let flippedCards = [];
 let matchedCount = 0;
 let isProcessing = false;
+let timerInterval = null;
+let secondsElapsed = 0;
+let gameMode = "up"; // 'up' 代表正計時，'down' 代表倒計時
+const COUNTDOWN_TIME = 40; // 倒計時秒數設定
+
+function startTimer() {
+    // 先清除舊的計時器（如果有的話）
+    stopTimer();
+    
+    // 從下拉選單獲取目前模式
+    const modeSelect = document.getElementById('mode-select');
+    gameMode = modeSelect ? modeSelect.value : "up";
+
+    // 根據模式設定初始時間
+    if (gameMode === "down") {
+        secondsElapsed = COUNTDOWN_TIME;
+    } else {
+        secondsElapsed = 0;
+    }
+
+    updateTimerUI();
+    
+    timerInterval = setInterval(() => {
+        if (gameMode === "down") {
+            secondsElapsed--;
+            if (secondsElapsed <= 0) {
+                handleGameOver(false);
+            }
+        } else {
+            secondsElapsed++;
+        }
+        updateTimerUI();
+    }, 1000);
+}
+
+function stopTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+}
+
+function updateTimerUI() {
+    const label = gameMode === "down" ? "剩餘時間" : "用時";
+    document.getElementById('timer-display').innerText = `${label}：${secondsElapsed} 秒`;
+}
+
+function handleGameOver(isWin) {
+    stopTimer();
+    isProcessing = true; // 鎖定操作
+    const msgBox = document.getElementById('message-box');
+    
+    if (!isWin) {
+        const failMsg = "時間到！失敗了，再試一次吧！阿公阿嬤加油！";
+        msgBox.innerText = failMsg;
+        speak(failMsg);
+    }
+}
 
 function prepareCards() {
     cardData = [];
@@ -101,9 +159,12 @@ function checkMatch() {
         isProcessing = false;
 
         if (matchedCount === cardData.length) {
+            handleGameOver(true);
             setTimeout(() => {
-                msgBox.innerText = "🎉 太棒了！全部過關！阿公阿嬤好厲害！";
-                speak("太棒了！全部過關！阿公阿嬤好厲害！");
+                const totalUsed = gameMode === "down" ? COUNTDOWN_TIME - secondsElapsed : secondsElapsed;
+                const finishMsg = `🎉 太棒了！全部過關！一共花了 ${totalUsed} 秒！阿公阿嬤好厲害！`;
+                msgBox.innerText = finishMsg;
+                speak(finishMsg);
             }, 1000);
         }
     } else {
@@ -128,6 +189,7 @@ function initGame() {
     isProcessing = false;
     document.getElementById('message-box').innerText = "歡迎來挑戰！點擊卡片開始吧！";
     window.speechSynthesis.cancel();
+    startTimer(); // 開始新的計時
     createBoard();
 }
 

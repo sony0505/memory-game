@@ -15,6 +15,34 @@ p {
     color: #333;
     font-weight: bold;
 }
+.settings-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #fff;
+    padding: 10px 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border: 2px solid #FF9800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.settings-container select {
+    padding: 5px;
+    font-size: 1rem;
+}
+#timer-display {
+    font-size: 1.8rem;
+    color: #E65100;
+    background-color: #FFF9C4;
+    display: inline-block;
+    padding: 5px 20px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    border: 2px solid #FFB300;
+}
 .game-board {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -82,6 +110,11 @@ button:hover {
     background-color: #F57C00;
 }
 @media (max-width: 600px) {
+    .settings-container {
+        position: static;
+        display: inline-flex;
+        margin-bottom: 10px;
+    }
     .game-board {
         grid-template-columns: repeat(2, 1fr);
     }
